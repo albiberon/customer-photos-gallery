@@ -4,87 +4,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
-        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
     <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 </head>
 
 <body>
 
     <style>
-        ul {
-            display: flex;
-            flex-wrap: wrap;
-            list-style: none;
-        }
-
-        li {
-            height: 40vh;
-            flex-grow: 1;
-            box-shadow: 10px 14px 20px 0px rgba(226, 204, 189, 1);
-            background-color: none;
-            border: 0px solid white;
-            margin: 10px;
-            border-radius: 4px;
-            overflow: hidden;
+        .ps-container {
             position: relative;
         }
 
-        /* li:last-child { */
-        /* There's no science in using "10" here. In all my testing, this delivered the best results. */
-        /* flex-grow: 10;
-        } */
-
-        img {
-            max-height: 100%;
-            min-width: 100%;
-            object-fit: cover;
-            vertical-align: bottom;
-            border-radius: 5px;
-            transition: transform .5s;
-            /* Animation */
+        .ps-gallery.ps-theme-modern {
+            max-width: 1400px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        img:hover {
-            transform: scale(1.05);
-
+        .ps-theme-modern,
+        .ps-theme-modern * {
+            box-sizing: border-box;
         }
 
-        /* ADVANCED
-
-        Portrait */
-
-        @media (max-aspect-ratio: 1/1) {
-            li {
-                height: 30vh;
-            }
+        .ps-theme-modern .ps-note-add-pics {
+            margin-bottom: 10px;
+            overflow: hidden;
         }
 
-        /* Short screens */
-
-        @media (max-height: 480px) {
-            li {
-                height: 80vh;
-            }
+        .ps-theme-modern .ps-note-add-pics .ps-note-add-pics-text {
+            color: var(--tagging-font-color, rgba(0, 0, 0, .5));
+            font-family: var(--tagging-font-family, inherit);
+            font-size: var(--tagging-font-size, 14px);
+            font-style: var(--tagging-font-style, normal);
+            font-weight: var(--tagging-font-weight, 300);
+            letter-spacing: -.3px;
+            float: left;
         }
 
-        /* Smaller screens in portrait */
+        .ps-theme-modern .ps-img-container {
+            position: relative;
+            touch-action: manipulation;
+        }
 
-        @media (max-aspect-ratio: 1/1) and (max-width: 480px) {
-            ul {
-                flex-direction: row;
+        @media only screen and (min-width:200px) {
+
+            .ps-gallery.ps-theme-modern {
+                overflow-anchor: none;
             }
 
-            li {
-                height: auto;
+            .ps-gallery.ps-theme-modern .ps-images {
+                display: grid;
+                flex-flow: row wrap;
+                grid-gap: 10px;
+                grid-template-columns: repeat(auto-fill, 220px);
+                grid-auto-flow: dense;
+                list-style-type: none;
+                justify-content: center;
+                margin: 0;
+                padding: 0;
+            }
+
+            .ps-gallery.ps-theme-modern .ps-image {
+                background-color: var(--thumbnail-bg-color, transparent);
+                border-color: var(--thumbnail-border-color, transparent);
+                position: relative;
+                opacity: 1;
+                transition: all .5s ease-out;
+                transition-property: display, opacity, visibility;
+            }
+
+            .ps-gallery.ps-theme-modern .ps-image.ps-tile-loading {
+                opacity: 0
+            }
+
+            .ps-gallery.ps-theme-modern .ps-image.ps-big-thumb {
+                grid-column-end: span 2;
+                grid-row-end: span 2;
+            }
+
+            .ps-gallery.ps-theme-modern .ps-image:before {
+                content: "";
+                display: table;
+                padding-top: 100%;
+            }
+
+            .ps-gallery.ps-theme-modern .ps-image .ps-img-container {
+                overflow: hidden;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+
+            .ps-gallery.ps-theme-modern .ps-image img {
+                display: block;
+                height: 100%;
                 width: 100%;
-
+                -o-object-fit: cover;
+                object-fit: cover;
             }
 
-            img {
-                width: 100%;
-                max-height: 75vh;
-                min-width: 0;
+            .ps-gallery.ps-theme-modern .ps-image p {
+                color: #666;
+                font-size: 12px;
+                margin: 7px 0 0 7px;
+            }
+
+            .ps-gallery.ps-theme-modern .ps-spinner-gallery {
+                width: 40px;
+                height: 40px;
+                margin: 0 auto;
+            }
+
+            .ps-gallery.ps-theme-modern .ps-load-more-container {
+                padding-top: 7px;
+                text-align: center;
+                display: none;
+            }
+        }
+
+        @media only screen and (max-width:600px) {
+            .ps-gallery.ps-theme-modern .ps-images {
+                grid-template-columns: repeat(auto-fill, calc(50% - 5px));
             }
         }
 
@@ -92,7 +136,6 @@
             position: absolute;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            /* Black see-through */
             color: #f1f1f1;
             width: 100%;
             transition: .5s ease;
@@ -100,8 +143,9 @@
             font-size: 16px;
             padding: 20px;
             text-align: center;
-            z-index: 999;
+            z-index: 5;
             width: 100%;
+            cursor: pointer;
         }
 
         .img-overlay a:hover,
@@ -111,159 +155,427 @@
             text-decoration: none;
             color: #f1f1f1;
         }
+
+        .ps-img-container img {
+            transition: transform .5s;
+        }
+
+        .ps-img-container img:hover {
+            transform: scale(1.05);
+        }
+
+        .heading p {
+            font-size: 18px;
+        }
+
+        .txt-center {
+            text-align: center;
+        }
+
+        .ps-image {
+            margin-bottom: 0px;
+        }
+
+        .photo-popup-overlay {
+            visibility: hidden;
+            z-index: 9999999;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .photo-popup-content {
+            visibility: hidden;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: auto;
+            max-width: 500px;
+            margin-top: 20%;
+            max-height: 500px;
+            text-align: center;;
+
+
+        }
+
+        .photo-popup-overlay.active {
+            visibility: visible;
+
+        }
+
+        .photo-popup-content.active {
+            visibility: visible;
+        }
+
+        .content-image-wrapper {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 300px;
+            height: 300px;
+        }
+
+        .content-image-wrapper img {
+            width: 100% !important;
+
+        }
+
+        .jg-close-button {
+            margin-right: 1%;
+            font-weight: 500;
+            color: white;;
+            float: right;
+            font-size: 2.7em;
+            /* margin-top: -10px; */
+            position:static!important;
+            display: block;
+        }
+        .go-to-page-button {
+            background-color:rgb(37, 132, 3);
+border-bottom-left-radius:4px;
+border-bottom-right-radius:4px;
+border-top-left-radius:4px;
+border-top-right-radius:4px;
+box-sizing:border-box;
+border: none!important;
+color:rgb(255, 255, 255);
+cursor:pointer;
+display:inline;
+font-family:"Open Sans", sans-serif;
+font-size:18px;
+font-style:normal;
+font-weight:400;
+height:auto;
+letter-spacing:1.1px;
+line-height:25.7143px;
+padding-bottom:10px;
+padding-left:25px;
+padding-right:25px;
+padding-top:10px;
+text-align:center;
+text-decoration-color:rgb(255, 255, 255);
+text-decoration-line:none;
+text-decoration-style:solid;
+text-size-adjust:100%;
+width:auto;
+        }
     </style>
 
-    <ul>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/Hy-land-15_204_0-Q4-1.JPG"
-                alt="Customer photo" loading="lazy">
+    <!--Creates the popup body-->
+    <div class="photo-popup-overlay">
+                    <!--popup's close button-->
+                    <span class="jg-close-button">×</span>
+        <!--Creates the popup content-->
 
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180122_JungleGymEspana.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180629_Veurne_BE_Cubby_Climbmodule_Kevin.jpg"
-                alt="Customer photo" loading="lazy">
+        <div class="photo-popup-content" style="z-index: 9999;">
 
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180626_SintTruiden_Belgie_PlayhouseXL_2swing_Kevin.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20190415_Chalet_Mini_Balcony_Swing_Douglas_Wittock_2_LET_OP_KIND_.jpeg"
-                alt="Customer photo" loading="lazy">
+            <div class="content-image-wrapper"></div>
+            <h3 style="text-align: center;"></h3>
+            <button class="go-to-page-button">Go to product page</button>
 
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180831_Wavre_BE_Paradise6_Trainmodule_2-swingmodules2.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/Copy_of_890_111-Paradise11-1_1_.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/Copy_of_20200623-NL-_Mike_Borcheld.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/Hy-land-15_204_0-Q4-1.JPG"
-                alt="Customer photo" loading="lazy">
-        </li>
+        </div>
+    </div>
 
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/Hy-land-15_204_0-Q4-1.JPG"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180122_JungleGymEspana.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180629_Veurne_BE_Cubby_Climbmodule_Kevin.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180626_SintTruiden_Belgie_PlayhouseXL_2swing_Kevin.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/Hy-land-15_204_0-Q4-1.JPG"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20190415_Chalet_Mini_Balcony_Swing_Douglas_Wittock_2_LET_OP_KIND_.jpeg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180831_Wavre_BE_Paradise6_Trainmodule_2-swingmodules2.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/Copy_of_890_111-Paradise11-1_1_.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/Copy_of_20200623-NL-_Mike_Borcheld.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/Hy-land-15_204_0-Q4-1.JPG"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180122_JungleGymEspana.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180629_Veurne_BE_Cubby_Climbmodule_Kevin.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180626_SintTruiden_Belgie_PlayhouseXL_2swing_Kevin.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20190415_Chalet_Mini_Balcony_Swing_Douglas_Wittock_2_LET_OP_KIND_.jpeg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/20180831_Wavre_BE_Paradise6_Trainmodule_2-swingmodules2.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/Copy_of_890_111-Paradise11-1_1_.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <li>
-            <div class="img-overlay"><a aria-label="Overlay link" href="https://www.junglegym.com">Overlay info text</a></div>
-            <img src="https://www.junglegym.com/media/wysiwyg/customer_photos/Copy_of_20200623-NL-_Mike_Borcheld.jpg"
-                alt="Customer photo" loading="lazy">
-        </li>
-        <!--  Adding an empty <li> here so the final photo doesn't stretch like crazy. Try removing it and see what happens!  -->
-        <!-- <li></li> -->
-    </ul>
+
+    <div class="ps-gallery ps-theme-modern">
+
+        <div class="heading txt-center">
+
+            <h1>See something you like? Shop straight from this page!</h1>
+            <p style="font-size:18px;">Can you spot them in the wild?</p>
+            <p style="font-size:18px;">Use #JungleGymWorld and see your Jungle Gym appear on our website!</p>
+            <br>
+        </div>
+        <ul class="ps-images">
+            <li class="ps-image" style="order: 0;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Crazy Playhouse</span>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180122_JungleGymEspana-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 1;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Playhouse XL 2-Swing</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180626_SintTruiden_Belgie_PlayhouseXL_2swing_Kevin-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 2;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Cubby Climb</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180629_Veurne_BE_Cubby_Climbmodule_Kevin-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 3;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Hy-land Q4</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/Hy-land-15_204_0-Q4-1-s.jpg" alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 5;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Design your own</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20190415_Chalet_Mini_Balcony_Swing_Douglas_Wittock_2_LET_OP_KIND-s.jpeg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image ps-big-thumb" style="order: 4;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Paradise 6</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180831_Wavre_BE_Paradise6_Trainmodule_2-swingmodules2-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image ps-big-thumb" style="order: 6;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Paradise 11</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/Copy_of_890_111-Paradise11-1_1-s.jpg"
+                        alt="Customer photos">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 7;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Crazy Playhouse 2-Swing</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/Copy_of_20200623-NL-_Mike_Borcheld-s.jpg"
+                        alt="Customer photos">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 8;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span">Cubby Climb</a>
+                    </div>
+                    <img loading="loading" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180629_Veurne_BE_Cubby_Climbmodule_Kevin-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 9;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Paradise 11</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/Copy_of_890_111-Paradise11-1_1-s.jpg"
+                        alt="Customer Photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 10;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Design your own</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20190415_Chalet_Mini_Balcony_Swing_Douglas_Wittock_2_LET_OP_KIND-s.jpeg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 11;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Paradise 6</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180831_Wavre_BE_Paradise6_Trainmodule_2-swingmodules2-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 12;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Crazy Playhouse</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180122_JungleGymEspana-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 13;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span data-popup-link="https://www.junglegym.com">Playhouse XL 2-Swing</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180626_SintTruiden_Belgie_PlayhouseXL_2swing_Kevin-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 14;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Cubby Climb</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180629_Veurne_BE_Cubby_Climbmodule_Kevin-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 15;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Hy-land Q4</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/Hy-land-15_204_0-Q4-1-s.jpg" alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 16;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Design your own</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20190415_Chalet_Mini_Balcony_Swing_Douglas_Wittock_2_LET_OP_KIND-s.jpeg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image ps-big-thumb" style="order: 17;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Paradise 6</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180831_Wavre_BE_Paradise6_Trainmodule_2-swingmodules2-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 18;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Paradise 11</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/Copy_of_890_111-Paradise11-1_1-s.jpg"
+                        alt="Customer photos">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 19;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Crazy Playhouse 2-Swing</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/Copy_of_20200623-NL-_Mike_Borcheld-s.jpg"
+                        alt="Customer photos">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 20;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Cubby Climb</a>
+                    </div>
+                    <img loading="loading" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180629_Veurne_BE_Cubby_Climbmodule_Kevin-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image ps-big-thumb" style="order: 21;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Paradise 11</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/Copy_of_890_111-Paradise11-1_1-s.jpg"
+                        alt="Customer Photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 22;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Design your own</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20190415_Chalet_Mini_Balcony_Swing_Douglas_Wittock_2_LET_OP_KIND-s.jpeg"
+                        alt="Customer photo">
+                </div>
+            </li>
+            <li class="ps-image" style="order: 23;">
+                <div class="ps-img-container">
+                    <div class="img-overlay">
+                        <span>Paradise 6</a>
+                    </div>
+                    <img loading="lazy" data-popup-link="https://www.junglegym.com"
+                        src="https://www.junglegym.com/media/wysiwyg/20180831_Wavre_BE_Paradise6_Trainmodule_2-swingmodules2-s.jpg"
+                        alt="Customer photo">
+                </div>
+            </li>
+        </ul>
+
+
+    </div>
 
 
     <script>
         jQuery(function ($) {
+            function goToUrl(url) {
+                location.href = url;
+            }
+
             // require(['jquery', 'domReady!'], function ($) {
-            $('li').on('mouseenter', function () {
+            $('.ps-image').on('mouseenter', function () {
                 $(this).find('.img-overlay').css('opacity', '1');
             });
-            $('li').on('mouseleave', function () {
+            $('.ps-image').on('mouseleave', function () {
                 $(this).find('.img-overlay').css('opacity', '0');
             });
+
+            //appends an "active" class to .popup and .popup-content when the "Open" button is clicked
+            $(".ps-image").on("click", function () {
+                let imgToAdd = $(this).find('img');
+                let popupHeader = $(this).find('.img-overlay span');
+                $(imgToAdd).clone().prependTo($('.content-image-wrapper'));
+                $(popupHeader).clone().prependTo($('.photo-popup-content').find('h3'));
+                $(".photo-popup-overlay, .photo-popup-content").addClass("active");
+            });
+
+            $('.content-image-wrapper').parent().on('click', function () {
+                let linkToVisit = $(this).find('img').attr('data-popup-link');
+                console.log(linkToVisit);
+                goToUrl(linkToVisit);
+
+            });
+
+            //removes the "active" class to .popup and .popup-content when the "Close" button is clicked 
+            $(".jg-close-button,.photo-popup-overlay").on("click", function () {
+                $(".photo-popup-overlay, .photo-popup-content").removeClass("active");
+                $('.content-image-wrapper').empty();
+                $('.photo-popup-content').find('h3').empty();
+            });
         });
+
     </script>
+
+
+
 
 
 </body>
